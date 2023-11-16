@@ -146,7 +146,7 @@ fun NoteRow(
             horizontalAlignment = Alignment.Start) {
             Text(text = note.title, style = MaterialTheme.typography.titleMedium)
             Text(text = note.description, style = MaterialTheme.typography.bodyMedium)
-            Text(text = note.entryDate.format(DateTimeFormatter.ofPattern("EEE,d MMM")), style = MaterialTheme.typography.bodySmall)
+//            Text(text = note.entryDate.format(DateTimeFormatter.ofPattern("EEE,d MMM")), style = MaterialTheme.typography.bodySmall)
         }
     }
 }
