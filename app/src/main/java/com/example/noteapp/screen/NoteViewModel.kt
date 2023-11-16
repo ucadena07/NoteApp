@@ -1,25 +1,50 @@
 package com.example.noteapp.screen
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.noteapp.data.NoteDataSource
 import com.example.noteapp.model.Note
+import com.example.noteapp.repository.NoteRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NoteViewModel : ViewModel() {
-    val noteList = mutableStateListOf<Note>()
+@HiltViewModel
+class NoteViewModel @Inject constructor(val repo: NoteRepository) : ViewModel() {
+    //val noteList = mutableStateListOf<Note>()
+    private val _noteList = MutableStateFlow<List<Note>>(emptyList())
+    val noteList = _noteList.asStateFlow()
 
     init {
-        noteList.addAll(NoteDataSource().loadNotes())
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.getAllNotes()
+                .distinctUntilChanged().collect {listOfNotes ->
+                    if(listOfNotes.isNullOrEmpty()){
+                        Log.d("Empty",": Empty List")
+                    }else{
+                        _noteList.value = listOfNotes
+                    }
+                }
+        }
     }
 
-    fun addNote(note:Note){
-        noteList.add(note)
+    suspend fun addNote(note: Note) = viewModelScope.launch {
+        repo.addNote(note)
     }
-    fun removeNote(note:Note){
-        noteList.remove(note)
+
+    suspend fun updateNote(note: Note) = viewModelScope.launch {
+        repo.upDateNote(note)
     }
-    fun getAlNotes(): List<Note>{
-        return noteList
+
+    suspend fun removeNote(note: Note) = viewModelScope.launch {
+        repo.deleteNote(note)
     }
 }
