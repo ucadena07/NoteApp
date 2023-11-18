@@ -3,4 +3,5 @@
 - Hilt & Dagger
 - Viewmodels
   
-![alt text](https://github.com/ucadena07/MovieApp/blob/main/movieApp.png "App Screenshot")
+![alt text](https://github.com/ucadena07/NoteApp/blob/main/app.png "App Screenshot")
+
