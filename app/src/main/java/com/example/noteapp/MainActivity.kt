@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val noteViewModel: NoteViewModel by viewModels()
+                    val noteViewModel = viewModel<NoteViewModel>()
                     NoteApp(noteViewModel)
                 }
             }
@@ -41,8 +42,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun NoteApp(noteViewModel: NoteViewModel = viewModel()){
-    val noteList = noteViewModel.getAlNotes()
+fun NoteApp(noteViewModel: NoteViewModel){
+    val noteList = noteViewModel.noteList.collectAsState().value
     NoteScreen(
         notes = noteList,
         onAddNote = {

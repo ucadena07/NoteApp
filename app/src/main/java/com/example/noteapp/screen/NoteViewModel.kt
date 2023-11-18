@@ -18,33 +18,34 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class NoteViewModel @Inject constructor(val repo: NoteRepository) : ViewModel() {
-    //val noteList = mutableStateListOf<Note>()
+class NoteViewModel @Inject constructor(private val repository: NoteRepository) : ViewModel() {
+
+
     private val _noteList = MutableStateFlow<List<Note>>(emptyList())
     val noteList = _noteList.asStateFlow()
+    //private var noteList = mutableStateListOf<Note>()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getAllNotes()
-                .distinctUntilChanged().collect {listOfNotes ->
-                    if(listOfNotes.isNullOrEmpty()){
-                        Log.d("Empty",": Empty List")
-                    }else{
+            repository.getAllNotes().distinctUntilChanged()
+                .collect { listOfNotes ->
+                    if (listOfNotes.isNullOrEmpty()) {
+                        Log.d("Empty", ": Empty list")
+                    }else {
                         _noteList.value = listOfNotes
                     }
+
                 }
+
         }
+        // noteList.addAll(NotesDataSource().loadNotes())
     }
 
-    suspend fun addNote(note: Note) = viewModelScope.launch {
-        repo.addNote(note)
+    fun addNote(note: Note) = viewModelScope.launch { repository.addNote(note) }
+    fun updateNote(note: Note) = viewModelScope.launch { repository.updateNote(note) }
+    fun removeNote(note: Note) = viewModelScope.launch {
+        repository.deleteNote(note)
+
     }
 
-    suspend fun updateNote(note: Note) = viewModelScope.launch {
-        repo.upDateNote(note)
-    }
-
-    suspend fun removeNote(note: Note) = viewModelScope.launch {
-        repo.deleteNote(note)
-    }
 }
